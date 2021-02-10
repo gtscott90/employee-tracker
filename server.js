@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var cTable = require('console.table');
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -42,7 +43,7 @@ connection.connect(function(err) {
       .then(function(answer) {
         switch (answer.action) {
         case "View All Employees":
-          // function for view all employees()
+          viewAllEmployees()
           break;
 
         case "View All Employees By Department":
@@ -75,7 +76,19 @@ connection.connect(function(err) {
         }
       });
   }
-  
+  // test query
+  function viewAllEmployees(answer) {
+    var query = "SELECT * FROM employee";
+        connection.query(query, function(err, res) {
+            for (var i = 0; i < res.length; i++) {
+                // console.log(res[i]);
+            }
+
+            console.table(res)
+            startingOptions();
+        });
+   }
+
   function artistSearch() {
     inquirer
       .prompt({
