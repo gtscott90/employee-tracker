@@ -12,5 +12,5 @@ INSERT INTO role (id, title, salary, department_id) VALUES (5, "Fundraising", 55
 INSERT INTO role (id, title, salary, department_id) VALUES (6, "Online Marketing", 75000.00, 3);
 INSERT INTO role (id, title, salary, department_id) VALUES (7, "Other Marketing", 70000.00, 3);
 
-INSERT INTO employee (id, first_name, last_name, role_id) VALUES (1, Jess, Jones, 1);
-INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (2, Mark, Williams, 2, 1);
+INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (1, "Jess", "Jones", 1, null);
+INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (2, "Mark", "Williams", 2, 1);
