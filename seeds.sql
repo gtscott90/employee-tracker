@@ -1,8 +1,8 @@
 -- INSERT INTO tableName (column 1, column 2) VALUES (value for column 1, value for column 2)
 
-INSERT INTO department (id, name) VALUES (1, "Engineering");
-INSERT INTO department (id, name) VALUES (2, "Accounting");
-INSERT INTO department (id, name) VALUES (3, "Marketing");
+INSERT INTO department (id, department_name) VALUES (1, "Engineering");
+INSERT INTO department (id, department_name) VALUES (2, "Accounting");
+INSERT INTO department (id, department_name) VALUES (3, "Marketing");
 
 INSERT INTO role (id, title, salary, department_id) VALUES (1, "Lead Enginner", 100000.00, 1);
 INSERT INTO role (id, title, salary, department_id) VALUES (2, "Enginner", 80000.00, 1);

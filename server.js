@@ -78,12 +78,14 @@ connection.connect(function(err) {
   }
   // test query
   function viewAllEmployees(answer) {
-    var query = "SELECT * FROM employee";
+    // var query = "SELECT * FROM employee";
+    var query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.department_name ";
+        query += "FROM ((role INNER JOIN employee ON role.id = employee.role_id) ";
+        query += "INNER JOIN department ON role.department_id = department.id)";
         connection.query(query, function(err, res) {
+            console.log(res)
             for (var i = 0; i < res.length; i++) {
-                // console.log(res[i]);
             }
-
             console.table(res)
             startingOptions();
         });
