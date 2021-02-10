@@ -17,10 +17,18 @@ connection.connect(function(err) {
   });
   
   // Functions 
-  // startingOptions()
-  // viewAllEmployees() -->   
-  // viewEmployeeByDept() --> artist search    
-  // viewEmployeeByManager() --> artist search   
+    // startingOptions()
+    // viewAllEmployees() -->  
+    // TODO:
+    // viewEmployeeByDept() --> select query, like artist search    
+    // viewEmployeeByManager() --> select query, like artist search
+    // addEmployee() --> create query
+    // removeEmployee() --> delete query 
+    // updateEmployeeRole() --> update query
+    // updateEmployeeManager() --> update query
+    // viewAllRoles() --> select query, like artist search 
+    // end()
+  
 
 
   function startingOptions() {
