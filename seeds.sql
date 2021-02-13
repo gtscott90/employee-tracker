@@ -5,8 +5,8 @@ INSERT INTO department (id, department_name) VALUES (2, "Accounting");
 INSERT INTO department (id, department_name) VALUES (3, "Marketing");
 
 
-INSERT INTO role (id, title, salary, department_id) VALUES (1, "Lead Enginner", 100000.00, 1);
-INSERT INTO role (id, title, salary, department_id) VALUES (2, "Enginner", 80000.00, 1);
+INSERT INTO role (id, title, salary, department_id) VALUES (1, "Lead Engineer", 100000.00, 1);
+INSERT INTO role (id, title, salary, department_id) VALUES (2, "Engineer", 80000.00, 1);
 INSERT INTO role (id, title, salary, department_id) VALUES (3, "Junior Engineer", 60000.00, 1);
 INSERT INTO role (id, title, salary, department_id) VALUES (4, "Accountant", 95000.00, 2);
 INSERT INTO role (id, title, salary, department_id) VALUES (5, "Fundraising", 55000.00, 2);

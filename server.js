@@ -12,17 +12,14 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
   if (err) throw err;
+  console.log("Connected to SQL");
   // first prompt we want to be user to have
   startingOptions();
 });
 
 // Functions
-// startingOptions()
-// viewAllEmployees()
-// viewEmployeeByDept()
 // TODO:
-// viewEmployeeByManager() --> select query, like artist search
-
+// viewEmployeeByManager() --> select query
 // addEmployee() --> create query
 // removeEmployee() --> delete query
 // updateEmployeeRole() --> update query
@@ -84,16 +81,9 @@ function startingOptions() {
     });
 }
 function viewAllEmployees(answer) {
-  var query =
-    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.department_name ";
-  query += "FROM ((role INNER JOIN employee ON role.id = employee.role_id) ";
-  query += "INNER JOIN department ON role.department_id = department.id)";
-  // var query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.department_name, employee.manager_id ";
-  //     query += "FROM (((role INNER JOIN employee ON role.id = employee.role_id) ";
-  //     query += "INNER JOIN department ON role.department_id = department.id) ";
-  //     query += "INNER JOIN employee ON employee.id = employee.manager_id)";
+  var query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager "
+  query += "FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;";
   connection.query(query, function (err, res) {
-    // console.log(res)
     for (var i = 0; i < res.length; i++) {}
     console.table(res);
     startingOptions();
@@ -105,6 +95,7 @@ function viewEmployeeByDept() {
     "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.department_name ";
   query += "FROM ((role INNER JOIN employee ON role.id = employee.role_id) ";
   query +=
+  // add query from viewALLEMployee function to include manager 
     "INNER JOIN department ON role.department_id = department.id) ORDER BY department.id";
   connection.query(query, function (err, res) {
     // console.log(res)
@@ -114,7 +105,9 @@ function viewEmployeeByDept() {
   });
 }
 
-function addEmployee() {
+async function addEmployee() {
+    var allRoles = await getAllRoles()
+    console.log(allRoles)
   inquirer
     .prompt([
       {
@@ -131,42 +124,71 @@ function addEmployee() {
         name: "role",
         type: "list",
         message: "What is the employee's role?",
-        choices: [
-          "Lead Engineer",
-          "Engineer",
-          "Junior Engineer",
-          "Accountant",
-          "Fundraising",
-          "Online Marketing",
-          "Other Marketing",
-        ],
+        choices: allRoles,
       },
       // , {
       // name: "manager",
       // type: "list",
       // message: "Who is the employee's manager?",
-      // choicees: ["Lead Engineer", "Engineer", "Junior Engineer", "Accountant", "Fundraising", "Online Marketing", "Other Marketing"]
+      // choicees: make a variable that holds an array for the manager choices 
+                    // do a select query to get the manager names 
       // },
     ])
-    .then(function (answer) {
+    .then(async function (answer) {
       // to do: deconstruct here?
       // const { first, last, role } = answer;
-      console.log(answer.last)
-      console.log(answer.role)
+      var roleID = await getRoleId(answer.role)
+      console.log(roleID)
       var query =
         "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, null)";
       connection.query(
-        query, [answer.first, answer.last, answer.role],
+        query,
+        [answer.first, answer.last, roleID],
         function (err, res) {
-            console.log("Your employee has been added to the system")
-        //   for (var i = 0; i < res.length; i++) {}
-        //   console.table(res);
-          
+            if (err) throw err
+            console.log(res)
+          console.log("Your employee has been added to the system");
+          //   for (var i = 0; i < res.length; i++) {}
+          //   console.table(res);
+
           startingOptions();
         }
       );
     });
 }
+function getRoleId(title) {
+    return new Promise(function(resolve, reject){
+        var query = `SELECT role.id FROM role WHERE title = "${title}"`;
+        connection.query(query, function(err, res){
+            if (err) reject(err)
+            console.log(res)
+            resolve(res[0].id)
+        })
+    }) 
+}
+
+function getAllRoles() {
+    return new Promise(function(resolve, reject){
+        var query = `SELECT role.title FROM role`;
+        connection.query(query, function(err, res){
+            if (err) reject(err)
+            console.log(res)
+            const roleOptions = []
+            for (var i=0; i < res.length; i++){
+                roleOptions.push(res[i].title)
+            }
+            resolve(roleOptions)
+        })
+    }) 
+}
+
+function removeEmployee() {
+    // prompt which employee would you like to remove
+    // take user input and include in the DELETE query
+}
+
+
+
 function artistSearch() {
   inquirer
     .prompt({
