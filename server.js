@@ -107,7 +107,7 @@ function viewEmployeeByDept() {
 
 async function addEmployee() {
     var allRoles = await getAllRoles()
-    console.log(allRoles)
+    var allManagers = await getAllManagers()
   inquirer
     .prompt([
       {
@@ -126,31 +126,26 @@ async function addEmployee() {
         message: "What is the employee's role?",
         choices: allRoles,
       },
-      // , {
-      // name: "manager",
-      // type: "list",
-      // message: "Who is the employee's manager?",
-      // choicees: make a variable that holds an array for the manager choices 
-                    // do a select query to get the manager names 
-      // },
+      {
+      name: "manager",
+      type: "list",
+      message: "Who is the employee's manager?",
+      choices: allManagers
+      },
     ])
     .then(async function (answer) {
       // to do: deconstruct here?
       // const { first, last, role } = answer;
       var roleID = await getRoleId(answer.role)
-      console.log(roleID)
+      var managerID = await getManagerId(answer.manager)
       var query =
-        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, null)";
+        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
       connection.query(
         query,
-        [answer.first, answer.last, roleID],
+        [answer.first, answer.last, roleID, managerID],
         function (err, res) {
             if (err) throw err
-            console.log(res)
           console.log("Your employee has been added to the system");
-          //   for (var i = 0; i < res.length; i++) {}
-          //   console.table(res);
-
           startingOptions();
         }
       );
@@ -161,7 +156,6 @@ function getRoleId(title) {
         var query = `SELECT role.id FROM role WHERE title = "${title}"`;
         connection.query(query, function(err, res){
             if (err) reject(err)
-            console.log(res)
             resolve(res[0].id)
         })
     }) 
@@ -172,12 +166,34 @@ function getAllRoles() {
         var query = `SELECT role.title FROM role`;
         connection.query(query, function(err, res){
             if (err) reject(err)
-            console.log(res)
             const roleOptions = []
             for (var i=0; i < res.length; i++){
                 roleOptions.push(res[i].title)
             }
             resolve(roleOptions)
+        })
+    }) 
+}
+
+function getManagerId(name) {
+    return new Promise(function(resolve, reject){
+        var query = `SELECT employee.id FROM employee WHERE first_name = "${name}"`;
+        connection.query(query, function(err, res){
+            if (err) reject(err)
+            resolve(res[0].id)
+        })
+    }) 
+}
+function getAllManagers() {
+    return new Promise(function(resolve, reject){
+        var query = `SELECT * from employee WHERE employee.manager_id IS NULL;`;
+        connection.query(query, function(err, res){
+            if (err) reject(err)
+            const managerOptions = []
+            for (var i=0; i < res.length; i++){
+                managerOptions.push(res[i].first_name)
+            }
+            resolve(managerOptions)
         })
     }) 
 }
