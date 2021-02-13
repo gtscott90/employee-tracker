@@ -55,7 +55,7 @@ function startingOptions() {
           break;
 
         case "View All Employees By Manager":
-          //rangeSearch();
+          viewEmployeeByManager();
           break;
 
         case "Add Employee":
@@ -93,10 +93,17 @@ function viewAllEmployees(answer) {
 function viewEmployeeByDept() {
     var query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager "
     query += "FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id ORDER BY department.id DESC";
-  // add query from viewALLEMployee function to include manager 
-   // "INNER JOIN department ON role.department_id = department.id) ORDER BY department.id";
   connection.query(query, function (err, res) {
-    // console.log(res)
+    for (var i = 0; i < res.length; i++) {}
+    console.table(res);
+    startingOptions();
+  });
+}
+
+function viewEmployeeByManager() {
+    var query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager "
+    query += "FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id ORDER BY employee.manager_id DESC";
+  connection.query(query, function (err, res) {
     for (var i = 0; i < res.length; i++) {}
     console.table(res);
     startingOptions();
@@ -132,8 +139,6 @@ async function addEmployee() {
       },
     ])
     .then(async function (answer) {
-      // to do: deconstruct here?
-      // const { first, last, role } = answer;
       var roleID = await getRoleId(answer.role)
       var managerID = await getManagerId(answer.manager)
       var query =
