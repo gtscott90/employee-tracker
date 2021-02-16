@@ -2,11 +2,13 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var cTable = require("console.table");
 
+require('dotenv').config();
+
 var connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
   user: "root",
-  password: "WarriorMentality1995!",
+  password: process.env.PASS,
   database: "employee_DB",
 });
 
@@ -19,7 +21,6 @@ connection.connect(function (err) {
 
 // Functions
 // TODO:
-// removeEmployee() --> delete query
 // updateEmployeeRole() --> update query
 // updateEmployeeManager() --> update query
 // viewAllRoles() --> select query, like artist search
@@ -161,7 +162,6 @@ function getRoleId(title) {
         })
     }) 
 }
-
 function getAllRoles() {
     return new Promise(function(resolve, reject){
         var query = `SELECT role.title FROM role`;
@@ -175,7 +175,6 @@ function getAllRoles() {
         })
     }) 
 }
-
 function getManagerId(name) {
     return new Promise(function(resolve, reject){
         var query = `SELECT employee.id FROM employee WHERE first_name = "${name}"`;
@@ -224,13 +223,8 @@ async function removeEmployee() {
                 startingOptions();
             }
             );
-    // prompt which employee would you like to remove
-    // need to make a list of employees --> look at allroles or allmanagers in the add employee function
-    // take user input and include in the DELETE query
-    // if res.affectedRows === 0, console.log("There was nothing to delete!"), else console.log("Delete Successful!")
 })
 }
-
 function getEmployeeId(name) {
     return new Promise(function(resolve, reject) {
         var query = `SELECT employee.id FROM employee WHERE CONCAT(first_name, " ", last_name) = ?`;
@@ -241,7 +235,6 @@ function getEmployeeId(name) {
         })
     }) 
 }
-
 function getAllEmployees() {
     return new Promise(function(resolve, reject){
         var query = `SELECT * from employee;`;
@@ -255,4 +248,12 @@ function getAllEmployees() {
             resolve(employeeOptions)
         })
     }) 
+}
+
+function updateEmployeeRole() {
+
+}
+
+function updateEmployeeManager() {
+
 }
