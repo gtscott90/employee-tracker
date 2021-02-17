@@ -23,6 +23,8 @@ connection.connect(function (err) {
 // TODO:
 // updateEmployeeManager() --> update query
 // viewAllRoles() --> select query, like artist search
+// addDepartment()
+// addRole()
 // end()
 
 function startingOptions() {
@@ -34,12 +36,16 @@ function startingOptions() {
       choices: [
         "View All Employees",
         "View All Employees By Department",
+        "View All Employees By Role",
         "View All Employees By Manager",
+        "View All Roles",
+        "View All Departments",
         "Add Employee",
+        "Add Department",
+        "Add Role",
         "Remove Employee",
         "Update Employee Role",
         "Update Employee Manger",
-        "View All Roles",
       ],
     })
     .then(function (answer) {
@@ -52,12 +58,24 @@ function startingOptions() {
           viewEmployeeByDept();
           break;
 
+        case "View All Employees By Role":
+          // viewEmployeeByDept();
+          break;
+
         case "View All Employees By Manager":
           viewEmployeeByManager();
           break;
 
         case "Add Employee":
           addEmployee();
+          break;
+
+        case "Add Department":
+          //addEmployee();
+          break;
+
+        case "Add Role":
+          //addEmployee();
           break;
 
         case "Remove Employee":
@@ -69,11 +87,15 @@ function startingOptions() {
           break;
 
         case "Update Employee Manger":
-          
+          updateEmployeeManager();
           break;
 
         case "View All Roles":
           
+          break;
+        
+        case "View All Departments":
+
           break;
       }
     });
@@ -284,6 +306,39 @@ async function updateEmployeeRole() {
   })
   }
 
-function updateEmployeeManager() {
-
-}
+async function updateEmployeeManager() {
+    var allEmployees = await getAllEmployees()
+    var allManagers = await getAllManagers()
+    inquirer
+        .prompt([
+        {
+        name: "employee",
+        type: "list",
+        message: "Which employee's manager would you like to update?",
+        choices: allEmployees
+        },
+        {
+        name: "newManager",
+        type: "list",
+        message: "Select the employee's new manager:",
+        choices: allManagers
+        },
+        ])
+        .then(async function (answer) {
+        var employeeID = await getEmployeeId(answer.employee)
+        var managerID = await getManagerId(answer.newManager)
+        console.log(managerID)
+        console.log(employeeID)
+        var query =
+            "UPDATE employee SET employee.manager_id = ? WHERE employee.id = ?";
+            connection.query(
+                query,
+                [managerID, employeeID],
+                function (err, res) {
+                    if (err) throw err
+                    console.log("Your employee's manager has been updated in the system");
+                    startingOptions();
+                }
+                );
+    })
+  }
