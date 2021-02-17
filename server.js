@@ -23,6 +23,7 @@ connection.connect(function (err) {
 // TODO:
 // updateEmployeeManager() --> update query
 // viewAllRoles() --> select query, like artist search
+// viewAllDepartments()
 // addDepartment()
 // addRole()
 // end()
@@ -59,44 +60,49 @@ function startingOptions() {
           break;
 
         case "View All Employees By Role":
-          // viewEmployeeByDept();
+          viewEmployeeByRole();
           break;
 
         case "View All Employees By Manager":
           viewEmployeeByManager();
           break;
 
+        // to do 
+        case "View All Roles":
+          
+          break;
+          
+        case "View All Departments":
+          viewAllDepartments();
+          break;
+        
         case "Add Employee":
           addEmployee();
           break;
 
         case "Add Department":
-          //addEmployee();
+          addDepartment();
           break;
 
-        case "Add Role":
-          //addEmployee();
+        // to do 
+          case "Add Role":
+          addRole();
           break;
 
         case "Remove Employee":
           removeEmployee();
           break;
 
-        case "Update Employee Role":
+        // to dp 
+          case "Update Employee Role":
           updateEmployeeRole();
           break;
 
-        case "Update Employee Manger":
+        // to do 
+          case "Update Employee Manger":
           updateEmployeeManager();
           break;
 
-        case "View All Roles":
-          
-          break;
-        
-        case "View All Departments":
-
-          break;
       }
     });
 }
@@ -113,6 +119,16 @@ function viewAllEmployees(answer) {
 function viewEmployeeByDept() {
     var query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager "
     query += "FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id ORDER BY department.id DESC";
+  connection.query(query, function (err, res) {
+    for (var i = 0; i < res.length; i++) {}
+    console.table(res);
+    startingOptions();
+  });
+}
+
+function viewEmployeeByRole() {
+    var query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager "
+    query += "FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id ORDER BY role.id";
   connection.query(query, function (err, res) {
     for (var i = 0; i < res.length; i++) {}
     console.table(res);
@@ -155,7 +171,7 @@ async function addEmployee() {
       name: "manager",
       type: "list",
       message: "Who is the employee's manager?",
-      choices: allManagers
+      choices: allManagers,
       },
     ])
     .then(async function (answer) {
@@ -198,7 +214,8 @@ function getAllRoles() {
 }
 function getManagerId(name) {
     return new Promise(function(resolve, reject){
-        var query = `SELECT employee.id FROM employee WHERE first_name = "${name}"`;
+        var nameArray = name.split(" ")
+        var query = `SELECT employee.id FROM employee WHERE first_name = "${nameArray[0]}"`;
         connection.query(query, function(err, res){
             if (err) reject(err)
             resolve(res[0].id)
@@ -218,6 +235,43 @@ function getAllManagers() {
             resolve(managerOptions)
         })
     }) 
+}
+
+function addDepartment() {
+    inquirer
+    .prompt([
+      {
+        name: "newDepartment",
+        type: "input",
+        message: "What is the name of the new department?",
+      },
+    ])
+    .then(async function (answer) {
+      var query =
+        "INSERT INTO department (department_name) VALUES (?)";
+      connection.query(
+        query,
+        [answer.newDepartment],
+        function (err, res) {
+            if (err) throw err
+          console.log("Your department has been added to the system");
+          startingOptions();
+        }
+      );
+    });
+}
+
+function viewAllDepartments() {
+    var query = "SELECT department.department_name FROM department ORDER BY department.id";
+  connection.query(query, function (err, res) {
+    for (var i = 0; i < res.length; i++) {}
+    console.table(res);
+    startingOptions();
+  });
+}
+
+function addRole() {
+
 }
 
 async function removeEmployee() {
@@ -327,8 +381,6 @@ async function updateEmployeeManager() {
         .then(async function (answer) {
         var employeeID = await getEmployeeId(answer.employee)
         var managerID = await getManagerId(answer.newManager)
-        console.log(managerID)
-        console.log(employeeID)
         var query =
             "UPDATE employee SET employee.manager_id = ? WHERE employee.id = ?";
             connection.query(
