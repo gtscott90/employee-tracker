@@ -21,7 +21,6 @@ connection.connect(function (err) {
 
 // Functions
 // TODO:
-// updateEmployeeRole() --> update query
 // updateEmployeeManager() --> update query
 // viewAllRoles() --> select query, like artist search
 // end()
@@ -66,7 +65,7 @@ function startingOptions() {
           break;
 
         case "Update Employee Role":
-          
+          updateEmployeeRole();
           break;
 
         case "Update Employee Manger":
@@ -250,9 +249,40 @@ function getAllEmployees() {
     }) 
 }
 
-function updateEmployeeRole() {
-
-}
+async function updateEmployeeRole() {
+    var allEmployees = await getAllEmployees()
+    var allRoles = await getAllRoles()
+    inquirer
+      .prompt([
+        {
+        name: "employee",
+        type: "list",
+        message: "Which employee's role would you like to update?",
+        choices: allEmployees
+        },
+        {
+        name: "newRole",
+        type: "list",
+        message: "Select the employee's new role:",
+        choices: allRoles
+        },
+      ])
+      .then(async function (answer) {
+        var employeeID = await getEmployeeId(answer.employee)
+        var roleID = await getRoleId(answer.newRole)
+        var query =
+          "UPDATE employee SET employee.role_id = ? WHERE employee.id = ?";
+          connection.query(
+              query,
+              [roleID, employeeID],
+              function (err, res) {
+                  if (err) throw err
+                  console.log("Your employee's role has been updated in the system");
+                  startingOptions();
+              }
+              );
+  })
+  }
 
 function updateEmployeeManager() {
 
