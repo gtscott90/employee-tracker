@@ -20,10 +20,9 @@ connection.connect(function (err) {
 });
 
 // Functions
-// TODO:
-// viewAllRoles() --> select query, like artist search
-// addRole()
-// end()
+    // TODO:
+    // addRole()
+    // end()
 
 function startingOptions() {
   inquirer
@@ -64,7 +63,6 @@ function startingOptions() {
           viewEmployeeByManager();
           break;
 
-        // to do 
         case "View All Roles":
           viewAllRoles();
           break;
@@ -257,7 +255,7 @@ function addDepartment() {
 }
 
 function viewAllDepartments() {
-    var query = "SELECT department.department_name FROM department ORDER BY department.id";
+    var query = "SELECT department.department_name AS Departments FROM department  ORDER BY department.id";
   connection.query(query, function (err, res) {
     for (var i = 0; i < res.length; i++) {}
     console.table(res);
@@ -265,8 +263,57 @@ function viewAllDepartments() {
   });
 }
 
-function addRole() {
+function getAllDepartments() {
+    return new Promise(function(resolve, reject){
+        var query = `SELECT department.department_name from department;`;
+        connection.query(query, function(err, res){
+            if (err) reject(err)
+            const departmentOptions = []
+            for (var i=0; i < res.length; i++){
+                departmentOptions.push(res[i].department_name)
+            }
+            resolve(departmentOptions)
+        })
+    }) 
+}
+function getDepartmentID() {
 
+}
+async function addRole() {
+    var allDepartments = await getAllDepartments()
+    inquirer
+    .prompt([
+      {
+        name: "newRole",
+        type: "input",
+        message: "What is name of the new role?",
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "What is the salary for this role?",
+      },
+      {
+        name: "department",
+        type: "list",
+        message: "which department does this role belong to?",
+        choices: allDepartments,
+      },
+    ])
+    .then(async function (answer) {
+        var departmentID = await getDepartmentId(answer.department)
+        var query =
+          "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)";
+        connection.query(
+          query,
+          [answer.newRole, answer.salary, departmentID],
+          function (err, res) {
+              if (err) throw err
+            console.log("Your role has been added to the system");
+            startingOptions();
+          }
+        );
+      });
 }
 
 function viewAllRoles() {
