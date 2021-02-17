@@ -21,10 +21,7 @@ connection.connect(function (err) {
 
 // Functions
 // TODO:
-// updateEmployeeManager() --> update query
 // viewAllRoles() --> select query, like artist search
-// viewAllDepartments()
-// addDepartment()
 // addRole()
 // end()
 
@@ -69,7 +66,7 @@ function startingOptions() {
 
         // to do 
         case "View All Roles":
-          
+          viewAllRoles();
           break;
           
         case "View All Departments":
@@ -93,12 +90,10 @@ function startingOptions() {
           removeEmployee();
           break;
 
-        // to dp 
           case "Update Employee Role":
           updateEmployeeRole();
           break;
 
-        // to do 
           case "Update Employee Manger":
           updateEmployeeManager();
           break;
@@ -272,6 +267,15 @@ function viewAllDepartments() {
 
 function addRole() {
 
+}
+
+function viewAllRoles() {
+    var query = "SELECT role.title, role.salary, department.department_name AS department FROM role LEFT JOIN department on role.department_id = department.id ORDER BY role.id";
+    connection.query(query, function (err, res) {
+      for (var i = 0; i < res.length; i++) {}
+      console.table(res);
+      startingOptions();
+    });
 }
 
 async function removeEmployee() {
