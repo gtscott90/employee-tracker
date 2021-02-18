@@ -19,11 +19,6 @@ connection.connect(function (err) {
   startingOptions();
 });
 
-// Functions
-    // TODO:
-    // addRole()
-    // end()
-
 function startingOptions() {
   inquirer
     .prompt({
