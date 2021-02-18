@@ -43,6 +43,7 @@ function startingOptions() {
         "Remove Employee",
         "Update Employee Role",
         "Update Employee Manger",
+        "Exit the System",
       ],
     })
     .then(function (answer) {
@@ -79,8 +80,7 @@ function startingOptions() {
           addDepartment();
           break;
 
-        // to do 
-          case "Add Role":
+        case "Add Role":
           addRole();
           break;
 
@@ -88,14 +88,17 @@ function startingOptions() {
           removeEmployee();
           break;
 
-          case "Update Employee Role":
+        case "Update Employee Role":
           updateEmployeeRole();
           break;
 
-          case "Update Employee Manger":
+        case "Update Employee Manger":
           updateEmployeeManager();
           break;
-
+        case "Exit the System":
+          connection.end();
+          console.log("You have exited the System");
+          break;
       }
     });
 }
@@ -276,8 +279,14 @@ function getAllDepartments() {
         })
     }) 
 }
-function getDepartmentID() {
-
+function getDepartmentId(name) {
+    return new Promise(function(resolve, reject){
+        var query = `SELECT department.id FROM department WHERE department_name = "${name}"`;
+        connection.query(query, function(err, res){
+            if (err) reject(err)
+            resolve(res[0].id)
+        })
+    }) 
 }
 async function addRole() {
     var allDepartments = await getAllDepartments()
